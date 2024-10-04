@@ -1,0 +1,173 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Email Collector</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #121212;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #f5f5f5;
+        }
+        .container {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            transition: all 0.3s ease-in-out;
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #f5f5f5;
+            font-weight: bold;
+        }
+        h2 {
+            font-size: 16px;
+            margin-bottom: 20px;
+            color: #cccccc;
+            font-weight: normal;
+        }
+        input[type="email"], textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #333;
+            border-radius: 8px;
+            background-color: #333;
+            color: #f5f5f5;
+            font-size: 14px;
+        }
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            background-color: #0071e3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        button:active {
+            background-color: #003f87;
+            transform: scale(0.95);
+        }
+        .download-button {
+            margin-top: 30px;
+            font-size: 14px;
+            background-color: #0071e3;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            display: none;
+            cursor: pointer;
+            border: none;
+        }
+        .download-button:hover {
+            background-color: #005bb5;
+        }
+        .message {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .note {
+            font-size: 12px;
+            color: #aaaaaa;
+            margin-top: 10px;
+            line-height: 1.4;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bearback</h1>
+        <h2>Exclusive Offers & More Await!</h2>
+        <input type="email" id="emailInput1" placeholder="Enter your email" onkeyup="validateEmails()" />
+        <input type="email" id="emailInput2" placeholder="Re-enter your email" onkeyup="validateEmails()" />
+        <textarea id="note" placeholder="Optional: Leave a note (e.g., preferences, suggestions)"></textarea>
+        
+        <button id="submitButton" onclick="addEmail()" disabled>Submit & Spin the Wheel!</button>
+        <p id="message" class="message"></p>
+        <button class="download-button" id="downloadButton" onclick="downloadEmails()">Download Emails</button>
+        <p class="note">By submitting your email, you agree to receive exclusive updates, offers, and marketing communications from Bearback. You may opt out at any time.</p>
+    </div>
+
+    <script>
+        let emails = [];
+
+        function validateEmails() {
+            const email1 = document.getElementById('emailInput1').value;
+            const email2 = document.getElementById('emailInput2').value;
+            const submitButton = document.getElementById('submitButton');
+
+            if (email1 && email2 && email1 === email2) {
+                submitButton.disabled = false;
+            } else {
+                submitButton.disabled = true;
+            }
+        }
+
+        function validateEmail(email) {
+            const emailRegex = /^[\w.%+-]+@[\w.-]+\.[a-zA-Z]{2,}$/;
+            return emailRegex.test(email);
+        }
+
+        function addEmail() {
+            const email1 = document.getElementById('emailInput1').value;
+            const email2 = document.getElementById('emailInput2').value;
+            const note = document.getElementById('note').value;
+            const message = document.getElementById('message');
+            const downloadButton = document.getElementById('downloadButton');
+
+            if (!validateEmail(email1) || email1 !== email2) {
+                message.textContent = "Emails do not match or invalid.";
+                message.style.color = "red";
+                return;
+            }
+
+            let emailEntry = "Email: " + email1;
+            if (note) {
+                emailEntry += "\nNote: " + note;
+            }
+            emails.push(emailEntry);
+
+            document.getElementById('emailInput1').value = '';
+            document.getElementById('emailInput2').value = '';
+            document.getElementById('note').value = '';
+            message.textContent = "Email added successfully!";
+            message.style.color = "green";
+            downloadButton.style.display = "inline-block";
+        }
+
+        function downloadEmails() {
+            if (emails.length === 0) {
+                const message = document.getElementById('message');
+                message.textContent = "No emails to download.";
+                message.style.color = "red";
+                return;
+            }
+
+            const emailBlob = new Blob([emails.join('\n\n')], { type: 'text/plain' });
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(emailBlob);
+            downloadLink.download = 'emails.txt';
+            downloadLink.click();
+        }
+    </script>
+</body>
+</html>
